@@ -13,7 +13,7 @@ export interface IUser extends Document {
     role?: string;
 }
 
-const emailRegexp = /^[\w.]+@[\w.]+\.[\w.]+$/;
+const emailRegexp =  /^[a-z-.\d]+@(\w+\.|\w+\.\w+\.)[a-z]+$/i;
 
 const userSchema = new Schema<IUser>({
     name: {

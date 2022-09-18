@@ -5,7 +5,10 @@ import {RequestError} from "../../helpers";
 
 const getById = async (req: IRequest, res: Response) => {
     const {id} = req.params;
-    const result: Array<IFilm> | null = await Film.find({_id: id, owner: req.user?.id});
+    const result: Array<IFilm> | null = await Film.find({_id: id, owner: req.user?.id})
+        .populate("owner", "email")
+        .populate("countries", "_id name")
+        .populate("genres", "_id name");
     if (!result[0]) {
         throw RequestError(404, "Not found")
     }
