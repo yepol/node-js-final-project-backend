@@ -16,21 +16,26 @@ export interface IFilm extends Document {
     owner: Types.ObjectId
 }
 
-const yearRegexp = /^(18|19|20)\d{2}$/;
+const yearRegexp = /^\d{4}$/;
 
 const filmSchema = new Schema<IFilm>({
     name: {
         type: String,
         required: true,
-        unique: true,
     },
     year: {
         type: String,
         validate: {
             validator(value: string) {
-                return yearRegexp.test(value);
+                if (yearRegexp.test(value)) {
+                    let current_year = new Date().getFullYear();
+                    if (+value >= 1880 && +value <= current_year) {
+                        return true;
+                    }
+                }
+                return false;
             },
-            message: (props) => `${props.value} must have 4 numbers: "2020" `
+            message: (props) => `${props.value} must between 1880 and current year `
         },
         required: true,
     },
@@ -68,7 +73,9 @@ export const addSchema = Joi.object({
     genres: Joi.array().required(),
     countries: Joi.array().required(),
     links: Joi.array().required(),
-})
+});
+
+filmSchema.index({"name": 1, "owner": 1}, {"unique": true});
 
 filmSchema.post("save", handleSaveErrors);
 
